@@ -15,6 +15,3 @@ allure-report/
 # Performance tests
 k6/
 k6_REST_API/
-
-# Test documentation
-Тестовая документация PostLink.xlsx
