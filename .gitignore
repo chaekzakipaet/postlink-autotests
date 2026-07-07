@@ -1,0 +1,20 @@
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+.env
+
+# Allure reports
+allure-results/
+allure-report/
+
+# Performance tests
+k6/
+k6_REST_API/
+
+# Test documentation
+Тестовая документация PostLink.xlsx
