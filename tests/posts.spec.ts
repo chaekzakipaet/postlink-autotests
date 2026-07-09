@@ -29,8 +29,10 @@ test.describe('Создание постов', () => {
 
         await test.step('2 Переход на страницу создания поста', async () => {
 
-            await createPostPage.newPostButton.click();
+            await expect(createPostPage.newPostButton).toBeVisible();
+            await expect(createPostPage.newPostButton).toBeEnabled();
 
+            await createPostPage.newPostButton.click();
             await expect(page).toHaveURL('/posts/new');
         });
 
@@ -42,57 +44,206 @@ test.describe('Создание постов', () => {
     });
 
     test('Авторизованный пользователь может создать новый пост', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    const createPostPage = new CreatePostPage(page);
-    const mainPage = new MainPage(page);
-    const postPage = new PostPage(page);
+        const loginPage = new LoginPage(page);
+        const createPostPage = new CreatePostPage(page);
+        const mainPage = new MainPage(page);
+        const postPage = new PostPage(page);
 
-    const testPost = {
-    title: `Автотест ${Date.now()}`.slice(0, 50),
-    content: `
-        Это тестовый пост, созданный автоматически через Playwright.
-        Он содержит достаточно символов для прохождения валидации поля Content.
-    `.trim(),
+        const testPost = {
+        title: `Автотест ${Date.now()}`.slice(0, 50),
+        content: `
+            Это тестовый пост, созданный автоматически через Playwright.
+            Он содержит достаточно символов для прохождения валидации поля Content.
+        `.trim(),
     };
 
-    expect(testPost.title.length).toBeGreaterThanOrEqual(3);
-    expect(testPost.title.length).toBeLessThanOrEqual(50);
+        expect(testPost.title.length).toBeGreaterThanOrEqual(3);
+        expect(testPost.title.length).toBeLessThanOrEqual(50);
 
-    expect(testPost.content.length).toBeGreaterThanOrEqual(50);
-    expect(testPost.content.length).toBeLessThanOrEqual(5000);
+        expect(testPost.content.length).toBeGreaterThanOrEqual(50);
+        expect(testPost.content.length).toBeLessThanOrEqual(5000);
 
-    await loginPage.goto();
-    await loginPage.login(TEST_USER.email, TEST_USER.password);
+        await loginPage.goto();
+        await loginPage.login(TEST_USER.email, TEST_USER.password);
 
-    await expect(page.getByTestId('header-signin-btn')).toHaveCount(0);
+        await expect(page.getByTestId('header-signin-btn')).toHaveCount(0);
 
-    await createPostPage.newPostButton.click();
-    await expect(page).toHaveURL('/posts/new');
+        await createPostPage.newPostButton.click();
+        await expect(page).toHaveURL('/posts/new');
 
-    await createPostPage.titleInput.fill(testPost.title);
+        await createPostPage.titleInput.fill(testPost.title);
 
-    await createPostPage.contentEditor.click();
-    await page.keyboard.type(testPost.content);
+        await createPostPage.contentEditor.click();
+        await page.keyboard.type(testPost.content);
 
-    await expect(createPostPage.titleInput).toHaveValue(testPost.title);
+        await expect(createPostPage.titleInput).toHaveValue(testPost.title);
 
-    await createPostPage.publishButton.click();
+        await createPostPage.publishButton.click();
 
-    // после публикации возвращаемся на главную
-    await expect(page).toHaveURL('/');
+        await expect(page).toHaveURL('/');
 
-    // проверяем, что пост появился
-    await expect(mainPage.postCardTitle(testPost.title)).toBeVisible();
+        await expect(mainPage.postCardTitle(testPost.title)).toBeVisible();
 
-    // открываем пост
-    await mainPage.openPost(testPost.title);
+        await mainPage.openPost(testPost.title);
 
-    // проверяем переход на страницу поста
-    await expect(page).toHaveURL(/\/posts\/.+/);
+        await expect(page).toHaveURL(/\/posts\/.+/);
 
-    await expect(postPage.postTitle(testPost.title)).toBeVisible();
+        await expect(postPage.postTitle(testPost.title)).toBeVisible();
 
-    await expect(postPage.postContent(testPost.content)).toBeVisible();
-});
+        await expect(postPage.postContent(testPost.content)).toBeVisible();
+    });
+
+    test('Пользователь не может создать пост с коротким заголовком', async ({ page }) => {
+        const loginPage = new LoginPage(page);
+        const createPostPage = new CreatePostPage(page);
+
+        const invalidPost = {
+            title: 'ab',
+            content: `
+                Это валидный текст поста, который содержит больше пятидесяти символов.
+            `.trim(),
+        };
+
+        await loginPage.goto();
+
+        await loginPage.login(
+            TEST_USER.email,
+            TEST_USER.password
+        );
+
+        await expect(page.getByTestId('header-signin-btn')).toHaveCount(0);
+
+        await createPostPage.newPostButton.click();
+
+        await expect(page).toHaveURL('/posts/new');
+
+        await expect(createPostPage.titleInput).toBeVisible();
+
+        await createPostPage.titleInput.fill(invalidPost.title);
+
+        await createPostPage.contentEditor.click();
+
+        await page.keyboard.insertText(invalidPost.content);
+
+        await createPostPage.publishButton.click();
+
+        await expect(page).toHaveURL('/posts/new');
+
+        await expect(page.getByText('Поле не может быть пустым. Пожалуйста, введите какой-нибудь текст.')).toBeVisible();
+    });
+
+    test('Пользователь не может создать пост с длинным заголовком', async ({ page }) => {
+        const loginPage = new LoginPage(page);
+        const createPostPage = new CreatePostPage(page);
+
+        const invalidPost = {
+            title: 'A'.repeat(51),
+            content: `
+                Это валидный текст поста, который содержит больше пятидесяти символов.
+            `.trim(),
+        };
+
+        await loginPage.goto();
+
+        await loginPage.login(
+            TEST_USER.email,
+            TEST_USER.password
+        );
+
+        await expect(page.getByTestId('header-signin-btn')).toHaveCount(0);
+
+        await createPostPage.newPostButton.click();
+
+        await expect(page).toHaveURL('/posts/new');
+
+        await expect(createPostPage.titleInput).toBeVisible();
+
+        await createPostPage.titleInput.fill(invalidPost.title);
+
+        await createPostPage.contentEditor.click();
+
+        await page.keyboard.insertText(invalidPost.content);
+
+        await createPostPage.publishButton.click();
+
+        await expect(page).toHaveURL('/posts/new');
+
+        await expect(
+        page.getByText('Заголовок должен содержать от 3 до 50 символов.')).toBeVisible();
+    });
+
+    test('Пользователь не может создать пост с коротким текстом', async ({ page }) => {
+        const loginPage = new LoginPage(page);
+        const createPostPage = new CreatePostPage(page);
+
+        const invalidPost = {
+            title: 'Автотестовый заголовок',
+            content: 'Короткий текст',
+        };
+
+        await loginPage.goto();
+
+        await loginPage.login(
+            TEST_USER.email,
+            TEST_USER.password
+        );
+
+        await expect(page.getByTestId('header-signin-btn')).toHaveCount(0);
+
+        await createPostPage.newPostButton.click();
+
+        await expect(page).toHaveURL('/posts/new');
+
+        await expect(createPostPage.titleInput).toBeVisible();
+
+        await createPostPage.titleInput.fill(invalidPost.title);
+
+        await createPostPage.contentEditor.click();
+
+        await page.keyboard.insertText(invalidPost.content);
+
+        await createPostPage.publishButton.click();
+
+        await expect(page).toHaveURL('/posts/new');
+
+        await expect(page.getByText('Минимум 50 символов.')).toBeVisible();
+    });
+
+    test('Пользователь не может создать пост с длинным текстом', async ({ page }) => {
+        const loginPage = new LoginPage(page);
+        const createPostPage = new CreatePostPage(page);
+
+        const invalidPost = {
+            title: 'Автотестовый заголовок',
+            content: 'A'.repeat(5001),
+        };
+
+        await loginPage.goto();
+
+        await loginPage.login(
+            TEST_USER.email,
+            TEST_USER.password
+        );
+
+        await expect(page.getByTestId('header-signin-btn')).toHaveCount(0);
+
+        await createPostPage.newPostButton.click();
+
+        await expect(page).toHaveURL('/posts/new');
+
+        await expect(createPostPage.titleInput).toBeVisible();
+
+        await createPostPage.titleInput.fill(invalidPost.title);
+
+        await createPostPage.contentEditor.click();
+
+        await page.keyboard.insertText(invalidPost.content);
+
+        await createPostPage.publishButton.click();
+
+        await expect(page).toHaveURL('/posts/new');
+
+        await expect(page.getByText('Максимум 5000 символов.')).toBeVisible();
+    });
 
 });

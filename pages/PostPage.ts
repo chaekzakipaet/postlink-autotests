@@ -3,9 +3,15 @@ import { Page } from '@playwright/test';
 export class PostPage {
     constructor(private page: Page) {}
 
-    readonly postTitle = (title: string) =>
-        this.page.getByRole('heading', { name: title });
+    get postArticle() {
+        return this.page.locator('article');
+    }
 
-    readonly postContent = (content: string) =>
-        this.page.getByText(content);
+    postTitle(title: string) {
+        return this.postArticle.getByRole('heading', { name: title });
+    }
+
+    postContent(content: string) {
+        return this.postArticle.getByText(content);
+    }
 }
