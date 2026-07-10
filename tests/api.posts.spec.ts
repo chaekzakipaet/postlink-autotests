@@ -23,13 +23,9 @@ test.describe("API постов", () => {
       },
     });
 
-    console.log("LOGIN STATUS:", loginResponse.status());
-
     expect(loginResponse.status()).toBe(200);
 
     const body = await loginResponse.json();
-
-    console.log("LOGIN BODY:", body);
 
     accessToken = body.access_token;
 
@@ -43,13 +39,9 @@ test.describe("API постов", () => {
   test("Получение списка постов через API", async () => {
     const response = await api.get("/posts");
 
-    console.log("GET /posts status:", response.status());
-
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-
-    console.log("GET /posts body:", body);
 
     expect(body).toHaveProperty("items");
     expect(body).toHaveProperty("total");
@@ -78,11 +70,7 @@ test.describe("API постов", () => {
       },
     });
 
-    console.log("POST /posts status:", response.status());
-
     const body = await response.json();
-
-    console.log("POST /posts body:", body);
 
     expect(response.status()).toBe(201);
 
@@ -101,8 +89,6 @@ test.describe("API постов", () => {
     expect(getResponse.status()).toBe(200);
 
     const createdPost = await getResponse.json();
-
-    console.log("GET /posts/:id body:", createdPost);
 
     expect(createdPost.id).toBe(body.id);
     expect(createdPost.title).toBe(title);
