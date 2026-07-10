@@ -96,4 +96,137 @@ test.describe("API постов", () => {
     expect(createdPost.preview).toContain("Playwright");
     expect(createdPost.author_username).toBe(body.author_username);
   });
+
+  test("Создание поста с Markdown-разметкой через API", async () => {
+    const markdownContent = `
+# Заголовок
+
+**Жирный текст**
+
+*Курсивный текст*
+
+- Первый пункт
+- Второй пункт
+
+\`code block\`
+  `.trim();
+
+    const title = `Markdown пост ${Date.now()}`;
+
+    const response = await api.post("/posts", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      data: {
+        title,
+        content: markdownContent,
+      },
+    });
+
+    expect(response.status()).toBe(201);
+
+    const body = await response.json();
+
+    expect(body.title).toBe(title);
+    expect(body.content).toContain("**Жирный текст**");
+    expect(body.content).toContain("*Курсивный текст*");
+    expect(body.content).toContain("- Первый пункт");
+
+    const getResponse = await api.get(`/posts/${body.id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    expect(getResponse.status()).toBe(200);
+
+    const createdPost = await getResponse.json();
+
+    expect(createdPost.content).toContain("**Жирный текст**");
+    expect(createdPost.content).toContain("*Курсивный текст*");
+    expect(createdPost.content).toContain("- Первый пункт");
+  });
+
+  test("Редактирование поста через API", async () => {
+    const createResponse = await api.post("/posts", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      data: {
+        title: `Автотест ${Date.now()}`,
+        content:
+          "Это тестовый пост для проверки редактирования. Он содержит достаточно символов для прохождения валидации.",
+      },
+    });
+
+    expect(createResponse.status()).toBe(201);
+
+    const createdPost = await createResponse.json();
+
+    const updatedTitle = `Обновленный пост ${Date.now()}`;
+
+    const updatedContent =
+      "Это уже обновленный текст поста. Он также содержит достаточное количество символов для прохождения валидации.";
+
+    const updateResponse = await api.put(`/posts/${createdPost.id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      data: {
+        title: updatedTitle,
+        content: updatedContent,
+        image_urls: [],
+        is_published: true,
+      },
+    });
+
+    expect(updateResponse.status()).toBe(200);
+
+    const updatedPost = await updateResponse.json();
+
+    expect(updatedPost.title).toBe(updatedTitle);
+    expect(updatedPost.content).toBe(updatedContent);
+
+    const getResponse = await api.get(`/posts/${createdPost.id}`);
+
+    expect(getResponse.status()).toBe(200);
+
+    const actualPost = await getResponse.json();
+
+    expect(actualPost.title).toBe(updatedTitle);
+    expect(actualPost.content).toBe(updatedContent);
+  });
+
+  test("Удаление поста через API", async () => {
+    const createResponse = await api.post("/posts", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      data: {
+        title: `Автотест для удаления ${Date.now()}`,
+        content:
+          "Это тестовый пост для проверки удаления. Он содержит достаточно символов для прохождения валидации.",
+      },
+    });
+
+    expect(createResponse.status()).toBe(201);
+
+    const createdPost = await createResponse.json();
+
+    const deleteResponse = await api.delete(`/posts/${createdPost.id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    expect(deleteResponse.status()).toBe(204);
+
+    const getResponse = await api.get(`/posts/${createdPost.id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    expect(getResponse.status()).toBe(404);
+  });
 });
