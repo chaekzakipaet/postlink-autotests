@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { RegisterPage } from "../pages/RegisterPage";
-import { acceptRegistrationAgreements } from "./helpers/checkbox";
+import { acceptRegistrationAgreements } from "../helpers/checkbox";
 
 test.describe("Модуль 1: Регистрация", () => {
   test("Регистрация нового пользователя (М1-1)", async ({ page }) => {

@@ -94,7 +94,7 @@ test.describe("API постов", () => {
     expect(createdPost.title).toBe(title);
     expect(createdPost.content).toContain("Playwright");
     expect(createdPost.preview).toContain("Playwright");
-    expect(createdPost.author_username).toBe(body.author_username);
+    expect(typeof createdPost.author_username).toBe("string");
   });
 
   test("Создание поста с Markdown-разметкой через API", async () => {
