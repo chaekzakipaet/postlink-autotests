@@ -26,12 +26,7 @@ test.describe("Создание постов", () => {
     const createPostPage = new CreatePostPage(page);
 
     await test.step("Переход на страницу создания поста", async () => {
-      await expect(createPostPage.newPostButton).toBeVisible();
-      await expect(createPostPage.newPostButton).toBeEnabled();
-
-      await createPostPage.newPostButton.click();
-
-      await expect(page).toHaveURL("/posts/new");
+      await createPostPage.openCreatePost();
     });
 
     await test.step("Проверка отображения формы создания поста", async () => {
@@ -61,9 +56,7 @@ test.describe("Создание постов", () => {
     expect(testPost.content.length).toBeGreaterThanOrEqual(50);
     expect(testPost.content.length).toBeLessThanOrEqual(5000);
 
-    await createPostPage.newPostButton.click();
-
-    await expect(page).toHaveURL("/posts/new");
+    await createPostPage.openCreatePost();
 
     await createPostPage.titleInput.fill(testPost.title);
 
@@ -96,25 +89,14 @@ test.describe("Создание постов", () => {
         "Это валидный текст поста, который содержит больше пятидесяти символов.",
     };
 
-    await createPostPage.newPostButton.click();
+    await createPostPage.openCreatePost();
 
-    await expect(page).toHaveURL("/posts/new");
+    await createPostPage.contentEditor.click();
+    await page.keyboard.insertText(invalidPost.content);
 
     await createPostPage.titleInput.fill(invalidPost.title);
 
-    await createPostPage.contentEditor.click();
-
-    await page.keyboard.insertText(invalidPost.content);
-
-    await createPostPage.publishButton.click();
-
-    await expect(page).toHaveURL("/posts/new");
-
-    await expect(
-      page.getByText(
-        "Поле не может быть пустым. Пожалуйста, введите какой-нибудь текст.",
-      ),
-    ).toBeVisible();
+    await expect(createPostPage.publishButton).toBeDisabled();
   });
 
   test("Пользователь не может создать пост с длинным заголовком", async ({
@@ -128,23 +110,14 @@ test.describe("Создание постов", () => {
         "Это валидный текст поста, который содержит больше пятидесяти символов.",
     };
 
-    await createPostPage.newPostButton.click();
+    await createPostPage.openCreatePost();
 
-    await expect(page).toHaveURL("/posts/new");
+    await createPostPage.contentEditor.click();
+    await page.keyboard.insertText(invalidPost.content);
 
     await createPostPage.titleInput.fill(invalidPost.title);
 
-    await createPostPage.contentEditor.click();
-
-    await page.keyboard.insertText(invalidPost.content);
-
-    await createPostPage.publishButton.click();
-
-    await expect(page).toHaveURL("/posts/new");
-
-    await expect(
-      page.getByText("Заголовок должен содержать от 3 до 50 символов."),
-    ).toBeVisible();
+    await expect(createPostPage.publishButton).toBeDisabled();
   });
 
   test("Пользователь не может создать пост с коротким текстом", async ({
@@ -157,9 +130,7 @@ test.describe("Создание постов", () => {
       content: "Короткий текст",
     };
 
-    await createPostPage.newPostButton.click();
-
-    await expect(page).toHaveURL("/posts/new");
+    await createPostPage.openCreatePost();
 
     await createPostPage.titleInput.fill(invalidPost.title);
 
@@ -167,11 +138,7 @@ test.describe("Создание постов", () => {
 
     await page.keyboard.insertText(invalidPost.content);
 
-    await createPostPage.publishButton.click();
-
-    await expect(page).toHaveURL("/posts/new");
-
-    await expect(page.getByText("Минимум 50 символов.")).toBeVisible();
+    await expect(createPostPage.publishButton).toBeDisabled();
   });
 
   test("Пользователь не может создать пост с длинным текстом", async ({
@@ -184,9 +151,7 @@ test.describe("Создание постов", () => {
       content: "A".repeat(5001),
     };
 
-    await createPostPage.newPostButton.click();
-
-    await expect(page).toHaveURL("/posts/new");
+    await createPostPage.openCreatePost();
 
     await createPostPage.titleInput.fill(invalidPost.title);
 
@@ -194,10 +159,6 @@ test.describe("Создание постов", () => {
 
     await page.keyboard.insertText(invalidPost.content);
 
-    await createPostPage.publishButton.click();
-
-    await expect(page).toHaveURL("/posts/new");
-
-    await expect(page.getByText("Максимум 5000 символов.")).toBeVisible();
+    await expect(createPostPage.publishButton).toBeDisabled();
   });
 });

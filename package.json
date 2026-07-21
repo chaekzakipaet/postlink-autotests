@@ -8,7 +8,9 @@
     "test:chromium": "playwright test --project=chromium",
     "test:headed": "playwright test --headed",
     "typecheck": "tsc --noEmit",
-    "k6:postlink": "k6 run k6/postlink-load-test.js"
+    "k6:postlink": "k6 run k6/postlink-load-test.js",
+    "allure:generate": "allure generate ./allure-results -o ./allure-report --clean",
+    "allure:open": "allure open ./allure-report"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +19,8 @@
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@types/node": "^25.9.2",
+    "allure-commandline": "^2.43.0",
+    "allure-playwright": "^3.10.2",
     "typescript": "^6.0.3"
   },
   "dependencies": {

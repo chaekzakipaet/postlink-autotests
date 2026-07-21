@@ -27,6 +27,20 @@ test("Авторизация пользователя с корректными 
   });
 });
 
+test("Авторизация с пустым email показывает клиентскую ошибку (М1-13)", async ({
+  page,
+}) => {
+  const loginPage = new LoginPage(page);
+
+  await loginPage.goto();
+
+  await loginPage.login("", TEST_USER.password);
+
+  await expect(
+    page.getByText("Field cannot be empty.", { exact: true }),
+  ).toBeVisible();
+});
+
 test("Авторизация с пустым паролем показывает клиентскую ошибку (М1-14)", async ({
   page,
 }) => {

@@ -69,6 +69,45 @@ test.describe("Модуль 1: Регистрация", () => {
     ).toBeVisible();
   });
 
+  test("Кнопка регистрация не активна без принятия пользовательских соглашений (М1-11)", async ({
+    page,
+  }) => {
+    const registerPage = new RegisterPage(page);
+
+    await registerPage.goto();
+
+    await registerPage.nicknameInput.fill(`user_${Date.now()}`);
+    await registerPage.emailInput.fill(`test_${Date.now()}@example.com`);
+    await registerPage.passwordInput.fill("ValidPassword123!");
+    await registerPage.confirmPasswordInput.fill("ValidPassword123!");
+
+    await expect(registerPage.privacyCheckbox).not.toBeChecked();
+    await expect(registerPage.dataProcessingCheckbox).not.toBeChecked();
+
+    await expect(registerPage.registerButton).toBeDisabled();
+  });
+
+  test("Кнопка регистрации становится активной после заполнения всех данных (М1-11.1)", async ({
+    page,
+  }) => {
+    const registerPage = new RegisterPage(page);
+
+    await registerPage.goto();
+
+    await registerPage.fillRegistrationForm(
+      `user_${Date.now()}`,
+      `test_${Date.now()}@example.com`,
+      "ValidPassword123!",
+    );
+
+    await acceptRegistrationAgreements(registerPage.modal);
+
+    await expect(registerPage.privacyCheckbox).toBeChecked();
+    await expect(registerPage.dataProcessingCheckbox).toBeChecked();
+
+    await expect(registerPage.registerButton).toBeEnabled();
+  });
+
   test("Регистрация с уже занятым email показывает безопасное сообщение", async ({
     page,
   }) => {
