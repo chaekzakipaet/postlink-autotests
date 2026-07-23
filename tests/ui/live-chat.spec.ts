@@ -44,4 +44,14 @@ test.describe("Live Chat", () => {
       path: "chat-result.png",
     });
   });
+
+  test("Гость не может отправить сообщение в Live Chat", async ({ page }) => {
+    await page.goto("/posts/7913a36a-b1cf-4d35-ab1f-24279481a525");
+
+    const chat = new LiveChatPage(page);
+
+    await expect(chat.guestMessageInput).toBeVisible();
+
+    await expect(chat.guestMessageInput).toHaveAttribute("readonly", "");
+  });
 });

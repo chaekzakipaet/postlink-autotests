@@ -5,6 +5,7 @@ export class LiveChatPage {
 
   readonly messageInput: Locator;
   readonly sendButton: Locator;
+  readonly guestMessageInput: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -12,6 +13,10 @@ export class LiveChatPage {
     this.messageInput = page.locator(
       'input[placeholder="Write a message"]:not([readonly])',
     );
+
+    this.guestMessageInput = page.getByRole("textbox", {
+      name: "Sign in to join the chat",
+    });
 
     this.sendButton = page
       .getByRole("button", {
