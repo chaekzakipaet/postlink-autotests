@@ -33,11 +33,10 @@ export class CreatePostPage {
     await expect(this.newPostButton).toBeVisible();
     await expect(this.newPostButton).toBeEnabled();
 
-    await this.newPostButton.click();
-
-    await expect(this.page).toHaveURL(/\/posts\/new/, {
-      timeout: 10000,
-    });
+    await Promise.all([
+      this.page.waitForURL("**/posts/new"),
+      this.newPostButton.click(),
+    ]);
 
     await expect(this.titleInput).toBeVisible({
       timeout: 10000,

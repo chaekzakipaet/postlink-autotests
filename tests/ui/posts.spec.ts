@@ -12,7 +12,6 @@ const TEST_USER = {
 test.describe("Создание постов", () => {
   test.beforeEach(async ({ page }) => {
     const loginPage = new LoginPage(page);
-    const createPostPage = new CreatePostPage(page);
 
     await loginPage.goto();
 
@@ -20,9 +19,7 @@ test.describe("Создание постов", () => {
 
     await loginPage.expectLoggedIn();
 
-    await expect(createPostPage.newPostButton).toBeVisible({
-      timeout: 10000,
-    });
+    await page.waitForLoadState("networkidle");
   });
 
   test("Авторизованный пользователь открывает форму создания поста", async ({
