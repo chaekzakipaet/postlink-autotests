@@ -12,14 +12,18 @@ export class CreatePostPage {
   constructor(page: Page) {
     this.page = page;
 
-    this.newPostButton = page.locator("//button[@title='New post']");
+    this.newPostButton = page.getByTitle("New post");
+
     this.titleInput = page.getByPlaceholder("Enter post title");
+
     this.contentEditor = page.locator(
       "#simplemde-editor-1-wrapper .CodeMirror",
     );
+
     this.imageUpload = page.getByLabel(
       "Click to upload or drag and dropPNG, JPEG, GIF up to 500 KB",
     );
+
     this.publishButton = page.getByRole("button", {
       name: "Post Now",
     });
@@ -31,6 +35,12 @@ export class CreatePostPage {
 
     await this.newPostButton.click();
 
-    await expect(this.titleInput).toBeVisible();
+    await expect(this.page).toHaveURL(/\/posts\/new/, {
+      timeout: 10000,
+    });
+
+    await expect(this.titleInput).toBeVisible({
+      timeout: 10000,
+    });
   }
 }

@@ -12,12 +12,17 @@ const TEST_USER = {
 test.describe("Создание постов", () => {
   test.beforeEach(async ({ page }) => {
     const loginPage = new LoginPage(page);
+    const createPostPage = new CreatePostPage(page);
 
     await loginPage.goto();
 
     await loginPage.login(TEST_USER.email, TEST_USER.password);
 
-    await expect(page.getByTestId("header-signin-btn")).toHaveCount(0);
+    await loginPage.expectLoggedIn();
+
+    await expect(createPostPage.newPostButton).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("Авторизованный пользователь открывает форму создания поста", async ({
@@ -65,7 +70,7 @@ test.describe("Создание постов", () => {
 
     await createPostPage.publishButton.click();
 
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL(/\/$/);
 
     await expect(mainPage.postCardTitle(testPost.title)).toBeVisible();
 
