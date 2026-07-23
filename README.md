@@ -1,10 +1,12 @@
 # PostLink Autotests
 
-Automation tests for the PostLink web application.
+Automated API and UI tests for the **PostLink** web application.
 
-The project contains API and UI automated tests written with **Playwright**, **TypeScript**, and **Page Object Model (POM)**.
+The project contains automated tests written with **Playwright**, **TypeScript**, and **Page Object Model (POM)** principles.
 
-## Tech Stack
+---
+
+# Tech Stack
 
 * Playwright
 * TypeScript
@@ -13,49 +15,54 @@ The project contains API and UI automated tests written with **Playwright**, **T
 * API Testing
 * Git
 
-## Project Structure
+---
+
+# Project Structure
 
 ```text
 postlink-autotests/
 │
 ├── tests/
 │   │
-│   ├── api/                    # API test scenarios
+│   ├── api/
 │   │   ├── auth.spec.ts
 │   │   ├── likes.spec.ts
 │   │   ├── posts.spec.ts
 │   │   ├── saved-posts.spec.ts
 │   │   └── users.spec.ts
 │   │
-│   ├── ui/                     # UI test scenarios
+│   ├── ui/
 │   │   ├── auth.spec.ts
 │   │   ├── delete-account.spec.ts
 │   │   ├── delete-post.spec.ts
 │   │   ├── home.spec.ts
+│   │   ├── live-chat.spec.ts
 │   │   ├── posts.spec.ts
 │   │   ├── protected-routes.spec.ts
 │   │   └── register.spec.ts
 │   │
-│   └── pages/                  # Page Object classes
-│       ├── LoginPage.ts
-│       ├── RegisterPage.ts
+│   └── pages/
 │       ├── CreatePostPage.ts
+│       ├── LoginPage.ts
 │       ├── MainPage.ts
 │       ├── PostPage.ts
-│       └── ProfilePage.ts
+│       ├── ProfilePage.ts
+│       └── RegisterPage.ts
 │
-├── playwright.config.ts        # Playwright configuration
+├── playwright.config.ts
 ├── package.json
 └── README.md
 ```
 
-## Covered Scenarios
+---
+
+# Covered Scenarios
 
 ## API Testing
 
 ### Authentication
 
-* Successful user authorization
+* Successful authorization
 * Authorization with invalid password
 * Authorization with non-existing user
 
@@ -74,13 +81,15 @@ postlink-autotests/
 
 ### Likes
 
-* Add like to post
-* Remove like from post
+* Add like to a post
+* Remove like from a post
 
 ### Saved Posts
 
 * Save post
-* Remove post from saved list
+* Remove post from saved posts
+
+---
 
 ## UI Testing
 
@@ -88,32 +97,45 @@ postlink-autotests/
 
 * User login
 * Login validation
-* Password reset request flow
+* Password reset request
 
 ### Registration
 
 * User registration
-* Validation of required fields
+* Required fields validation
 * Password confirmation validation
+* Registration button state validation
 * Registration with existing email
 
 ### Posts
 
 * Open post creation page
 * Create a new post
-* Verify created post
-* Validate title length limits
-* Validate content length limits
+* Title length validation
+* Content length validation
+* Delete own post
+
+### Live Chat
+
+* Send chat message
+* Guest cannot send messages
+* Verify WebSocket message delivery
+
+### Protected Routes
+
+* Guest access restrictions
+* Open protected pages after authentication
 
 ### User Profile
 
-* Access protected routes
 * Open user profile
-* Delete user account
+* Update user profile (API)
 
-## Installation
+---
 
-Install dependencies:
+# Installation
+
+Install project dependencies:
 
 ```bash
 npm install
@@ -125,15 +147,11 @@ Install Playwright browsers:
 npx playwright install
 ```
 
-## Environment Variables
+---
 
-Test credentials are stored in `.env` file:
+# Environment Variables
 
-```text
-TEST_USER_EMAIL
-TEST_USER_PASSWORD
-BASE_URL
-```
+The project uses a `.env` file with test credentials.
 
 Example:
 
@@ -143,7 +161,9 @@ TEST_USER_PASSWORD=password123
 BASE_URL=http://localhost:5173
 ```
 
-## Running Tests
+---
+
+# Running Tests
 
 Run all tests:
 
@@ -175,29 +195,46 @@ Run tests in headed mode:
 npx playwright test --headed
 ```
 
-Run tests with Playwright UI mode:
+Run Playwright UI mode:
 
 ```bash
 npx playwright test --ui
 ```
 
-## Reports
+---
 
-After test execution Playwright generates an HTML report:
+# Reports
+
+Generate and open the HTML report:
 
 ```bash
 npx playwright show-report
 ```
 
-## Test Results
+---
+
+# Current Automated Coverage
+
+* API testing
+* UI end-to-end testing
+* Authentication
+* Registration
+* Posts CRUD
+* Live Chat
+* WebSocket communication
+* Protected routes
+* Positive and negative scenarios
+* Form validation
+* Page Object Model architecture
+
+Tests are executed using the Chromium browser.
+
+---
+
+# Test Suite
 
 Current test suite includes:
 
-* API tests
-* UI end-to-end tests
-* Page Object Model architecture
-* Positive and negative test scenarios
-* Form validation checks
-* Protected route checks
-
-All tests are executed with Chromium browser.
+* **14 API tests**
+* **26 UI tests**
+* **40 automated tests** in total
