@@ -15,3 +15,6 @@ allure-report/
 # Performance tests
 k6/
 k6_REST_API/
+
+# Temporary screenshots
+*.png
